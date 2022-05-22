@@ -1,8 +1,10 @@
 #include <Windows.h>
 #include <iostream>
+#include <vector>
 #include <string>
 #include <fstream>
 #include <bitset>
+#include <tlhelp32.h>
 #include "INIReader.h"
 #include "MinHook/include/MinHook.h"
 
@@ -37,14 +39,21 @@ class CCore {
 public:
 	static VOID Start();
 	virtual VOID Run();
+	virtual LPVOID InjectShellCode(BYTE *shellCode, size_t len);
+	virtual LPVOID InjectShellCodeAtAddress(LPVOID address, BYTE *shellCode, size_t len);
 	virtual BOOL Initialise();
 	virtual BOOL GetArrayList();
 	virtual BOOL SaveArrayList();
 	virtual BOOL Hook(DWORD64 qAddress, DWORD64 qDetour, DWORD64* pReturn, DWORD dByteLen);
 	virtual VOID Panic(char* pMessage, char* pSort, DWORD dError, DWORD dIsFatalError);
 	virtual VOID DebugInit();
+	static VOID InputCommand();
 	virtual VOID DisplayInfoMsg();
 	virtual VOID LockEquipSlots();
+	virtual uintptr_t GetModuleBaseAddress();
+	virtual uintptr_t FindDMAAddy(HANDLE hProc, uintptr_t ptr, std::vector<unsigned int> offsets);
+	virtual uintptr_t FindExecutableAddress(uintptr_t ptr, std::vector<unsigned int> offsets);
+	virtual void CCore::ConvertToLittleEndianByteArray(uintptr_t address, char* output);
 	fDisplayInfoMsg* DisplayEquipLockMsg; //0x14075BC70
 private:
 	fDisplayGraveMessage* DisplayGraveMessage;
